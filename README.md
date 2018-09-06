@@ -1,4 +1,6 @@
-# Monitoring stack
+# Monitoring stack on Kubernetes.
+
+This documentation aim to document Monitoring in a kubernetes environment.
 
 **Prometheus Server & Alertmanager**
 
