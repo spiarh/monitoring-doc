@@ -1,0 +1,17 @@
+# Enable the creation of pod security policy
+podSecurityPolicy:
+  enabled: true
+
+# Create a specific service account
+serviceAccount:
+  create: true
+  name: nginx-ingress
+
+# Deploy HTTP on port 30080
+# Deploy HTTPS on port 30443
+controller:
+  service:
+    type: NodePort
+    nodePorts:
+      http: 30080
+      https: 30443

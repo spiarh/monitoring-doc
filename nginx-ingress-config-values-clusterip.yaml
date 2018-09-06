@@ -1,0 +1,16 @@
+# Enable the creation of pod security policy
+podSecurityPolicy:
+  enabled: true
+
+# Create a specific service account
+serviceAccount:
+  create: true
+  name: nginx-ingress
+
+# Publish services on port HTTP/80
+# Publish services on port HTTPS/443
+# These services are exposed on the node with IP 10.84.152.113
+controller:
+  service:
+    externalIPs:
+      - 10.84.152.113

@@ -1,0 +1,6 @@
+auth
+ceph-secrets.yaml
+kubeconfig
+my-storage-class.yaml
+ssl
+testing-README.md

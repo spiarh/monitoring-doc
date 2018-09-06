@@ -1,0 +1,35 @@
+# Configure admin password
+adminPassword: 3357b57b-25a1-4780-ac78-8b77fd7ed9e1
+
+# Ingress configuration
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - grafana.example.com
+  tls:
+    - hosts:
+      - grafana.example.com
+      secretName: monitoring-tls
+
+# Configure persistent storage
+persistence:
+  enabled: true
+  accessModes: 
+    - ReadWriteOnce
+  ## Use a StorageClass
+  storageClassName: my-storage-class
+  ## Create a PersistentVolumeClaim of 10Gi
+  size: 10Gi
+  ## Use an existing PersistentVolumeClaim (my-pvc)
+  #existingClaim: my-pvc
+
+# Enable sidecar for provisioning
+sidecar:
+  datasources:
+    enabled: true
+    label: grafana_datasource
+  dashboards:
+    enabled: true
+    label: grafana_dashboard

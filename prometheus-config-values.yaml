@@ -1,0 +1,64 @@
+alertmanager:
+  enabled: false
+#  enabled: true
+#  ingress:
+#    enabled: true
+#    hosts:
+#    -  monitoring-prometheus
+#    annotations:
+#      kubernetes.io/ingress.class: nginx
+#      nginx.ingress.kubernetes.io/auth-type: basic
+#      nginx.ingress.kubernetes.io/auth-secret: prometheus-basic-auth
+#      nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+#    tls:
+#      - hosts:
+#        - prometheus-alertmanager.example.com
+#        secretName: monitoring-tls
+#  persistentVolume:
+#    enabled: false
+#    #enabled: true
+#    #size: 10Gi
+#    #existingClaim: my-pvc
+#    #storageClass: my-storage-class
+
+# Create a specific service account
+serviceAccounts:
+  nodeExporter:
+    name: prometheus-node-exporter
+
+# Allow scheduling of node-exporter on master nodes
+nodeExporter:
+  tolerations:
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+      effect: NoSchedule
+
+# Disable Pushgateway
+pushgateway:
+  enabled: false
+
+server:
+  # Ingress configuration
+  ingress:
+    enabled: true
+    hosts:
+    - prometheus.example.com
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/auth-type: basic
+      nginx.ingress.kubernetes.io/auth-secret: prometheus-basic-auth
+      nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+    tls:
+      - hosts:
+        - prometheus.example.com
+        secretName: monitoring-tls
+  persistentVolume:
+    enabled: true
+    ## Use a StorageClass
+    storageClass: my-storage-class
+    ## Create a PersistentVolumeClaim of 10Gi
+    #size: 10Gi
+    ## Use an existing PersistentVolumeClaim (my-pvc)
+    #existingClaim: my-pvc
+
+
