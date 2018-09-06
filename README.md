@@ -1,6 +1,6 @@
 # Monitoring stack
 
-**Prometheus**
+**Prometheus Server & Alertmanager**
 
 Prometheus is an open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.
 
@@ -12,7 +12,7 @@ Grafana is an open-source system for querying, analysing and visualizing metrics
 **Nginx Ingress Controller**
 
 Deploying Nginx Ingress Controller allows us to provide TLS termination to our
-services and to provide basic authentication to Prometheus Expression browser URL.
+services and to provide basic authentication to Prometheus Expression browser/API.
 
 We have two networking configuration possible:
 
@@ -202,7 +202,7 @@ $ kubectl create -n monitoring secret tls monitoring-tls  \
 
 ## Prometheus
 
-Deploying Prometheus Pushgateway/Alertmanager is out of the scope of this document.
+Deploying Prometheus Pushgateway is out of the scope of this document.
 
 1. Manage permissions
 
@@ -233,9 +233,36 @@ Choose among the options and uncomment the line in the config file.
 * Create a file *prometheus-config-values.yaml* with the appropriate values.
 
 ```yaml
-# Disable Alertmanager
+# Alertmanager configuration
 alertmanager:
-  enabled: false
+  enabled: true
+  ingress:
+    enabled: true
+    hosts:
+    -  prometheus-alertmanager.example.com
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/auth-type: basic
+      nginx.ingress.kubernetes.io/auth-secret: prometheus-basic-auth
+      nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+    tls:
+      - hosts:
+        - prometheus-alertmanager.example.com
+        secretName: monitoring-tls
+  persistentVolume:
+    enabled: true
+    ## Use a StorageClass
+    storageClass: my-storage-class
+    ## Create a PersistentVolumeClaim of 2Gi
+    size: 2Gi
+    ## Use an existing PersistentVolumeClaim (my-pvc)
+    #existingClaim: my-pvc
+
+## AlertManager is configured through alertmanager.yml. This file and any others
+## listed in alertmanagerFiles will be mounted into the alertmanager pod.
+## See configuration options https://prometheus.io/docs/alerting/configuration/
+#alertmanagerFiles:
+#  alertmanager.yml:
 
 # Create a specific service account
 serviceAccounts:
@@ -253,8 +280,8 @@ nodeExporter:
 pushgateway:
   enabled: false
 
+# Prometheus configuration
 server:
-  # Ingress configuration
   ingress:
     enabled: true
     hosts:
@@ -272,10 +299,17 @@ server:
     enabled: true
     ## Use a StorageClass
     storageClass: my-storage-class
-    ## Create a PersistentVolumeClaim of 10Gi
-    size: 10Gi
+    ## Create a PersistentVolumeClaim of 8Gi
+    size: 8Gi
     ## Use an existing PersistentVolumeClaim (my-pvc)
     #existingClaim: my-pvc
+
+## Prometheus is configured through prometheus.yml. This file and any others
+## listed in serverFiles will be mounted into the server pod.
+## See configuration options 
+## https://prometheus.io/docs/prometheus/latest/configuration/configuration/
+#serverFiles:
+#  prometheus.yml:
 ```
 
 * Deploy the upstream helm chart and pass our configuration values file.
@@ -291,6 +325,7 @@ $ helm install --name prometheus stable/prometheus \
 ```console
 $ kubectl -n monitoring get po | grep prometheus
 NAME                                             READY     STATUS    RESTARTS   AGE
+prometheus-alertmanager-5487596d54-kcdd6         2/2       Running   0          2m
 prometheus-kube-state-metrics-566669df8c-krblx   1/1       Running   0          2m
 prometheus-node-exporter-jnc5w                   1/1       Running   0          2m
 prometheus-node-exporter-qfwp9                   1/1       Running   0          2m
@@ -329,7 +364,7 @@ It is very important that the file name is **auth** so the key in the secret wil
 because the ingress controller will look for that key.
 
 
-=> At this stage, the Prometheus Expression browser is accessible, depending on
+=> At this stage, the Prometheus Expression browser/API is accessible, depending on
 you network configuration at https://prometheus.example.com or
 https://prometheus.example.com:30443
 
@@ -452,7 +487,7 @@ grafana-dbf7ddb7d-fxg6d                          3/3       Running   0          
 ```
 
 
-=> At this stage, the Prometheus Expression browser is accessible, depending on
+=> At this stage, Grafana is accessible, depending on
 you network configuration at https://grafana.example.com or
 https://grafana.example.com:30443
  
