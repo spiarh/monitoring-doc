@@ -59,19 +59,7 @@ SSL certificates are required for the domains prometheus.example.com, prometheus
 
 ## Nginx Ingress Controller
 
-1. Manage permissions
-
-**=> should not be necessary with podSecurityPolicy.enabled=true but during my
-tests the psp was not created, I'll investigate it after**
-
-```console
-$ kubectl create rolebinding nginx-ingress-psp-privileged \
-  --namespace monitoring \
-  --clusterrole=suse:caasp:psp:privileged \
-  --serviceaccount=monitoring:nginx-ingress
-```
-
-2. Choose a network configuration
+1. Choose a network configuration
 
 **NodePort**
 
@@ -122,7 +110,7 @@ controller:
       - 10.84.152.113
 ```
 
-3. Deploy
+2. Deploy
 
 Deploy the upstream helm chart and pass our configuration values file.
 
