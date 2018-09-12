@@ -1,3 +1,4 @@
+---
 # Enable the creation of pod security policy
 podSecurityPolicy:
   enabled: true
