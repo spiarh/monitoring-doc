@@ -405,7 +405,7 @@ $ kubectl create -f grafana-datasources.yaml
 Kubernetes nodes leveraging Prometheus node-exporter metrics only. (optional)
 
 ```console
-$ kubectl create -f grafana-dashboards.yaml
+$ cat grafana-dashboards-caasp* | kubectl apply -f -
 ```
 
 2. Deploy stack
