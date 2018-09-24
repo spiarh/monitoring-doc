@@ -261,6 +261,8 @@ serviceAccounts:
 
 # Allow scheduling of node-exporter on master nodes
 nodeExporter:
+  hostNetwork: false
+  hostPID: false
   tolerations:
     - key: node-role.kubernetes.io/master
       operator: Exists
