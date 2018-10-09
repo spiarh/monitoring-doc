@@ -196,6 +196,8 @@ Deploying Prometheus Pushgateway is out of the scope of this document.
 
 1. Manage permissions
 
+**DEPRECATED IN 7.3.0, use podSecurityPolicy**
+
 Prometheus node-exporter is in charge of getting the host metrics, to do so, it needs access
 to /proc or /sys path on the host. This is achieve with the use of HostPath in the pod specs,
 however using HostPath is forbidden by default in CaaSP so we need to assign the privileged PodSecurityPolicy to the node-exporter ServiceAccount, this ServiceAccount will be in 
@@ -263,6 +265,8 @@ serviceAccounts:
 nodeExporter:
   hostNetwork: false
   hostPID: false
+  podSecurityPolicy:
+    enabled: true
   tolerations:
     - key: node-role.kubernetes.io/master
       operator: Exists

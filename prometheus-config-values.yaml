@@ -39,6 +39,8 @@ serviceAccounts:
 nodeExporter:
   hostNetwork: false
   hostPID: false
+  podSecurityPolicy:
+    enabled: true
   tolerations:
     - key: node-role.kubernetes.io/master
       operator: Exists
