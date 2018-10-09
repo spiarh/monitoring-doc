@@ -1328,7 +1328,7 @@
       "thresholds": [],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Masters Status",
+      "title": "Workers Status",
       "tooltip": {
         "shared": true,
         "sort": 0,
