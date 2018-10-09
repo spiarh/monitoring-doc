@@ -474,7 +474,7 @@ $ helm install --name grafana stable/grafana \
   --values grafana-config-values.yaml
 ```
 
-=> We need these pods running (3 node-exporter pods because we have 3 nodes)
+=> We need this pod running
 
 ```console
 $ kubectl -n monitoring get po | grep grafana
