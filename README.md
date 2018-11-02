@@ -365,6 +365,99 @@ you network configuration at https://prometheus.example.com or
 https://prometheus.example.com:30443
 
 
+## Alertmanager configuration
+
+This is an **example** of how and where to configure Prometheus Alertmanager.
+
+The configuration set one receiver to get notified by email when a node
+meets one of these conditions:
+
+* Node is unschedulable.
+* Node becomes out of disk.
+* Node has memory pressure.
+* Node has disk pressure.
+
+The first two ones are critical because the node can't accept new pods,
+the last one are just warnings.
+
+
+The configuration file can be added in the section below 
+(see the official doc  https://prometheus.io/docs/alerting/configuration)
+
+```
+alertmanagerFiles:
+  alertmanager.yml:
+    global:
+      # The smarthost and SMTP sender used for mail notifications.
+      smtp_from: alertmanager@example.com
+      smtp_smarthost: smtp.example.com:587
+      smtp_auth_username: admin@example.com
+      smtp_auth_password: <password>
+      smtp_require_tls: true
+
+    route:
+      # The labels by which incoming alerts are grouped together.
+      group_by: ['node']
+
+      # When a new group of alerts is created by an incoming alert, wait at
+      # least 'group_wait' to send the initial notification.
+      # This way ensures that you get multiple alerts for the same group that start
+      # firing shortly after another are batched together on the first 
+      # notification.
+      group_wait: 30s
+
+      # When the first notification was sent, wait 'group_interval' to send a batch
+      # of new alerts that started firing for that group.
+      group_interval: 5m
+
+      # If an alert has successfully been sent, wait 'repeat_interval' to
+      # resend them.
+      repeat_interval: 3h 
+
+      # A default receiver
+      receiver: admin-example
+
+    receivers:
+    - name: 'admin-example'
+      email_configs:
+      - to: 'admin@example.com'
+```
+
+Replace the empty set of rules `rules: {}` in `serverFiles` section of the configuration file.
+
+```
+serverFiles:
+  alerts: {}
+  rules:
+    groups:
+    - name: caasp.node.rules
+      rules:
+      - alert: NodeIsNotReady
+        expr: kube_node_status_condition{condition="Ready",status="false"} == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          description: '{{ $labels.node }} is not ready'
+      - alert: NodeIsOutOfDisk
+        expr: kube_node_status_condition{condition="OutOfDisk",status="true"} == 1
+        labels:
+          severity: critical
+        annotations:
+          description: '{{ $labels.node }} has insufficient free disk space'
+      - alert: NodeHasDiskPressure
+        expr: kube_node_status_condition{condition="DiskPressure",status="true"} == 1
+        labels:
+          severity: warning
+        annotations:
+          description: '{{ $labels.node }} has insufficient available disk space'
+      - alert: NodeHasInsufficientMemory
+        expr: kube_node_status_condition{condition="MemoryPressure",status="true"} == 1
+        labels:
+          severity: warning
+        annotations:
+          description: '{{ $labels.node }} has insufficient available memory'
+```
 
 ## Grafana
 
