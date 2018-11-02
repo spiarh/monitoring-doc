@@ -79,7 +79,13 @@ server:
 ## See configuration options 
 ## https://prometheus.io/docs/prometheus/latest/configuration/configuration/
 serverFiles:
+  alerts: {}
+  rules: {}
   prometheus.yml:
+    rule_files:
+      - /etc/config/rules
+      - /etc/config/alerts
+
     scrape_configs:
     - job_name: prometheus
       scrape_interval: 1m
