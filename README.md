@@ -194,23 +194,7 @@ $ kubectl create -n monitoring secret tls monitoring-tls  \
 
 Deploying Prometheus Pushgateway is out of the scope of this document.
 
-1. Manage permissions
-
-**DEPRECATED IN 7.3.0, use podSecurityPolicy**
-
-Prometheus node-exporter is in charge of getting the host metrics, to do so, it needs access
-to /proc or /sys path on the host. This is achieve with the use of HostPath in the pod specs,
-however using HostPath is forbidden by default in CaaSP so we need to assign the privileged PodSecurityPolicy to the node-exporter ServiceAccount, this ServiceAccount will be in 
-charge of creating the pods.
-
-```console
-$ kubectl create rolebinding node-exporter-psp-privileged \
-  --namespace monitoring \
-  --clusterrole=suse:caasp:psp:privileged \
-  --serviceaccount=monitoring:prometheus-node-exporter
-```
-
-2. Deploy
+1. Deploy
 
 We need to configure the storage for our deployment.
 
@@ -330,7 +314,7 @@ prometheus-server-6488f6c4cd-5n9w8               2/2       Running   0          
 ```
 
 
-3. Configure Authentication
+2. Configure Authentication
 
 We need to create a basic-auth secret so the Nginx Ingress Controller can perform
 authentication.
