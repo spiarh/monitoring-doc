@@ -256,17 +256,17 @@ alertmanager:
 #alertmanagerFiles:
 #  alertmanager.yml:
 
-# Create a specific service account
-serviceAccounts:
-  nodeExporter:
-    name: prometheus-node-exporter
-
 # Allow scheduling of node-exporter on master nodes
 nodeExporter:
   hostNetwork: false
   hostPID: false
   podSecurityPolicy:
     enabled: true
+    annotations:
+      seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default'
+      apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+      seccomp.security.alpha.kubernetes.io/defaultProfileName: 'docker/default'
+      apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
   tolerations:
     - key: node-role.kubernetes.io/master
       operator: Exists
